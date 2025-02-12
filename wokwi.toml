@@ -1,0 +1,4 @@
+[wokwi]
+version = 1
+firmware = 'build/BitDogLab-ADC-Experimentos.uf2'
+elf = 'build/BitDogLab-ADC-Experimentos.elf'
