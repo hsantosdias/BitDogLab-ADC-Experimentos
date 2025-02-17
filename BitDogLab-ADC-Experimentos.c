@@ -1,56 +1,113 @@
 /*
-   Exemplo 4 do EBook pelo prof. Pedro Henrique Almeida Miranda
+ * Por: Wilton Lacerda Silva
+ *    Interface Homem-Máquina (IHM) com o Display OLED
+ * 
+ * Este programa utiliza o display OLED SSD1306 com resolução de 128x64 pixels
+ * e o microcontrolador RP2040 (Raspberry Pi Pico) para exibir informações
+ * do conversor analógico-digital (ADC) e do Joystick.
+ * Também mostra a leitura dos botões do Joystick e do botão A.
+ * 
+ * 
 */
 
-#include <stdio.h>            
-#include "pico/stdlib.h"      
-#include "hardware/adc.h"     
-#include "hardware/pwm.h"     
+#include <stdio.h>
+#include <stdlib.h>
+#include "pico/stdlib.h"
+#include "hardware/adc.h"
+#include "hardware/i2c.h"
+#include "ssd1306.h"
+#include "font.h"
+#define I2C_PORT i2c1
+#define I2C_SDA 14
+#define I2C_SCL 15
+#define endereco 0x3C
+#define JOYSTICK_X_PIN 26  // GPIO para eixo X
+#define JOYSTICK_Y_PIN 27  // GPIO para eixo Y
+#define JOYSTICK_PB 22 // GPIO para botão do Joystick
+#define Botao_A 5 // GPIO para botão A
 
-#define VRX_PIN 26  
-#define LED_PIN 13  
 
-uint pwm_init_gpio(uint gpio, uint wrap) {
-    gpio_set_function(gpio, GPIO_FUNC_PWM);
-
-    uint slice_num = pwm_gpio_to_slice_num(gpio);
-    pwm_set_wrap(slice_num, wrap);
-    
-    pwm_set_enabled(slice_num, true);  
-    return slice_num;  
+//Trecho para modo BOOTSEL com botão B
+#include "pico/bootrom.h"
+#define botaoB 6
+void gpio_irq_handler(uint gpio, uint32_t events)
+{
+  reset_usb_boot(0, 0);
 }
 
-int main() {
+int main()
+{
+  // Para ser utilizado o modo BOOTSEL com botão B
+  gpio_init(botaoB);
+  gpio_set_dir(botaoB, GPIO_IN);
+  gpio_pull_up(botaoB);
+  gpio_set_irq_enabled_with_callback(botaoB, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
+
+  gpio_init(JOYSTICK_PB);
+  gpio_set_dir(JOYSTICK_PB, GPIO_IN);
+  gpio_pull_up(JOYSTICK_PB); 
+
+  gpio_init(Botao_A);
+  gpio_set_dir(Botao_A, GPIO_IN);
+  gpio_pull_up(Botao_A);
+
+  // I2C Initialisation. Using it at 400Khz.
+  i2c_init(I2C_PORT, 400 * 1000);
+
+  gpio_set_function(I2C_SDA, GPIO_FUNC_I2C); // Set the GPIO pin function to I2C
+  gpio_set_function(I2C_SCL, GPIO_FUNC_I2C); // Set the GPIO pin function to I2C
+  gpio_pull_up(I2C_SDA); // Pull up the data line
+  gpio_pull_up(I2C_SCL); // Pull up the clock line
+  ssd1306_t ssd; // Inicializa a estrutura do display
+  ssd1306_init(&ssd, WIDTH, HEIGHT, false, endereco, I2C_PORT); // Inicializa o display
+  ssd1306_config(&ssd); // Configura o display
+  ssd1306_send_data(&ssd); // Envia os dados para o display
+
+  // Limpa o display. O display inicia com todos os pixels apagados.
+  ssd1306_fill(&ssd, false);
+  ssd1306_send_data(&ssd);
+
+  adc_init();
+  adc_gpio_init(JOYSTICK_X_PIN);
+  adc_gpio_init(JOYSTICK_Y_PIN);  
+  
+
+
+  uint16_t adc_value_x;
+  uint16_t adc_value_y;  
+  char str_x[5];  // Buffer para armazenar a string
+  char str_y[5];  // Buffer para armazenar a string  
+  
+  bool cor = true;
+  while (true)
+  {
+    adc_select_input(0); // Seleciona o ADC para eixo X. O pino 26 como entrada analógica
+    adc_value_x = adc_read();
+    adc_select_input(1); // Seleciona o ADC para eixo Y. O pino 27 como entrada analógica
+    adc_value_y = adc_read();    
+    sprintf(str_x, "%d", adc_value_x);  // Converte o inteiro em string
+    sprintf(str_y, "%d", adc_value_y);  // Converte o inteiro em string
     
-    stdio_init_all();
+    //cor = !cor;
+    // Atualiza o conteúdo do display com animações
+    ssd1306_fill(&ssd, !cor); // Limpa o display
+    ssd1306_rect(&ssd, 3, 3, 122, 60, cor, !cor); // Desenha um retângulo
+    ssd1306_line(&ssd, 3, 25, 123, 25, cor); // Desenha uma linha
+    ssd1306_line(&ssd, 3, 37, 123, 37, cor); // Desenha uma linha   
+    ssd1306_draw_string(&ssd, "CEPEDI   TIC37", 8, 6); // Desenha uma string
+    ssd1306_draw_string(&ssd, "EMBARCATECH", 20, 16); // Desenha uma string
+    ssd1306_draw_string(&ssd, "ADC   JOYSTICK", 10, 28); // Desenha uma string 
+    ssd1306_draw_string(&ssd, "X    Y    PB", 20, 41); // Desenha uma string    
+    ssd1306_line(&ssd, 44, 37, 44, 60, cor); // Desenha uma linha vertical         
+    ssd1306_draw_string(&ssd, str_x, 8, 52); // Desenha uma string     
+    ssd1306_line(&ssd, 84, 37, 84, 60, cor); // Desenha uma linha vertical      
+    ssd1306_draw_string(&ssd, str_y, 49, 52); // Desenha uma string   
+    ssd1306_rect(&ssd, 52, 90, 8, 8, cor, !gpio_get(JOYSTICK_PB)); // Desenha um retângulo  
+    ssd1306_rect(&ssd, 52, 102, 8, 8, cor, !gpio_get(Botao_A)); // Desenha um retângulo    
+    ssd1306_rect(&ssd, 52, 114, 8, 8, cor, !cor); // Desenha um retângulo       
+    ssd1306_send_data(&ssd); // Atualiza o display
 
-    adc_init(); 
 
-    adc_gpio_init(VRX_PIN); 
-
-    uint pwm_wrap = 4096;  
-    uint pwm_slice = pwm_init_gpio(LED_PIN, pwm_wrap);  
-    
-    uint32_t last_print_time = 0; 
-
-    while (true) {
-        adc_select_input(0);  
-        uint16_t vrx_value = adc_read(); 
-
-        pwm_set_gpio_level(LED_PIN, vrx_value); 
-
-        float duty_cycle = (vrx_value / 4095.0) * 100;  
-
-        
-        uint32_t current_time = to_ms_since_boot(get_absolute_time());  
-        if (current_time - last_print_time >= 1000) {  
-            printf("VRX: %u\n", vrx_value); 
-            printf("Duty Cycle LED: %.2f%%\n", duty_cycle); 
-            last_print_time = current_time;  
-        }
-
-        sleep_ms(100);  
-    }
-
-    return 0;  
+    sleep_ms(100);
+  }
 }
