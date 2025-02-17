@@ -28,16 +28,30 @@
 
 // Variáveis globais
 static ssd1306_t ssd;  // Definição global do display OLED SSD1306 128x64 I2C
+static volatile bool estado_led_vermelho = false; // Estado do LED Vermelho (inicialmente desligado)
 
-// Trecho para modo BOOTSEL com botão B
+// Trecho para modo BOOTSEL com botão B e controle do LED Vermelho
 void gpio_irq_handler(uint gpio, uint32_t events) {
-    if (gpio == BUTTON_PIN_B) {
-        reset_usb_boot(0, 0);
+   
+  
+  if (gpio == BUTTON_PIN_B) {
+    reset_usb_boot(0, 0);
+}
+  
+  if (gpio == BUTTON_PIN_A) {
+        estado_led_vermelho = !estado_led_vermelho; // Alterna o estado do LED Vermelho
+        gpio_put(LED_PIN_R, estado_led_vermelho); // Atualiza o LED
+        printf("Botão A pressionado: LED Vermelho %s\n", estado_led_vermelho ? "Ligado" : "Desligado");
     }
 }
 
 void init_gpio(void) {
     // Inicializa os botões
+    gpio_init(BUTTON_PIN_A);
+    gpio_set_dir(BUTTON_PIN_A, GPIO_IN);
+    gpio_pull_up(BUTTON_PIN_A);
+    gpio_set_irq_enabled_with_callback(BUTTON_PIN_A, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
+
     gpio_init(BUTTON_PIN_B);
     gpio_set_dir(BUTTON_PIN_B, GPIO_IN);
     gpio_pull_up(BUTTON_PIN_B);
@@ -68,19 +82,17 @@ void init_gpio(void) {
 void init_display(void) {
     // I2C Initialisation. Using it at 400Khz.
     i2c_init(I2C_PORT, 400 * 1000);
+    gpio_set_function(I2C_SDA, GPIO_FUNC_I2C); // Set the GPIO pin function to I2C
+    gpio_set_function(I2C_SCL, GPIO_FUNC_I2C); // Set the GPIO pin function to I2C
+    gpio_pull_up(I2C_SDA); // Pull up the data line
+    gpio_pull_up(I2C_SCL); // Pull up the clock line
 
-  gpio_set_function(I2C_SDA, GPIO_FUNC_I2C); // Set the GPIO pin function to I2C
-  gpio_set_function(I2C_SCL, GPIO_FUNC_I2C); // Set the GPIO pin function to I2C
-  gpio_pull_up(I2C_SDA); // Pull up the data line
-  gpio_pull_up(I2C_SCL); // Pull up the clock line
-
-  ssd1306_init(&ssd, WIDTH, HEIGHT, false, ENDERECO, I2C_PORT); // Inicializa o display
-  ssd1306_config(&ssd); // Configura o display
-  ssd1306_send_data(&ssd); // Envia os dados para o display
+    ssd1306_init(&ssd, WIDTH, HEIGHT, false, ENDERECO, I2C_PORT); // Inicializa o display
+    ssd1306_config(&ssd); // Configura o display
 
   // Limpa o display. O display inicia com todos os pixels apagados.
     ssd1306_fill(&ssd, false);
-    ssd1306_send_data(&ssd);
+    ssd1306_send_data(&ssd); // Envia os dados para o display
 }
 
 int main() {
@@ -92,15 +104,14 @@ int main() {
     
     uint16_t adc_value_x;
     uint16_t adc_value_y;
-  char str_x[5];  // Buffer para armazenar a string
-  char str_y[5];  // Buffer para armazenar a string  
-  
+    char str_x[5];  // Buffer para armazenar a string
+    char str_y[5];  // Buffer para armazenar a string  
+    
     bool cor = true;
-  while (true)
-  {
-    adc_select_input(0); // Seleciona o ADC para eixo X. O pino 26 como entrada analógica
+    while (true) {
+        adc_select_input(0); // Seleciona o ADC para eixo X. O pino 26 como entrada analógica
         adc_value_x = adc_read();
-    adc_select_input(1); // Seleciona o ADC para eixo Y. O pino 27 como entrada analógica
+        adc_select_input(1); // Seleciona o ADC para eixo Y. O pino 27 como entrada analógica
         adc_value_y = adc_read();
         
         sprintf(str_x, "%d", adc_value_x);
