@@ -1,14 +1,4 @@
-/*
- * Por: Wilton Lacerda Silva
- *    Interface Homem-Máquina (IHM) com o Display OLED
- * 
- * Este programa utiliza o display OLED SSD1306 com resolução de 128x64 pixels
- * e o microcontrolador RP2040 (Raspberry Pi Pico) para exibir informações
- * do conversor analógico-digital (ADC) e do Joystick.
- * Também mostra a leitura dos botões do Joystick e do botão A.
- * 
- * 
-*/
+//Codigo construido com base no codigo original https://github.com/wiltonlacerda/EmbarcaTechU4C8/tree/main/ADC_DisplayEmC_Ex5
 
 #include <stdio.h>
 #include <stdlib.h>
