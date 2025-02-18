@@ -35,7 +35,6 @@
 
 // Variáveis globais
 static ssd1306_t ssd;  // Definição global do display OLED SSD1306 128x64 I2C
-static volatile bool estado_led_vermelho = false; // Estado do LED Vermelho (inicialmente desligado)
 static volatile bool estado_led_verde = false; // Estado do LED Verde
 static volatile bool estado_pwm_leds = true; // Estado do controle PWM dos LEDs
 static volatile bool estado_borda = false; // Estado da borda do display
@@ -43,8 +42,8 @@ static volatile bool estado_borda = false; // Estado da borda do display
 
 // Trecho para modo BOOTSEL com botão B e controle do LED Vermelho
 void gpio_irq_handler(uint gpio, uint32_t events) {
-    static uint32_t last_time = 0;
-    uint32_t current_time = to_us_since_boot(get_absolute_time());
+    static uint32_t last_time = 0; // Variável para debounce
+    uint32_t current_time = to_us_since_boot(get_absolute_time()); // Tempo atual em microsegundos desde o boot
 
     if (current_time - last_time > 200000) { // Debounce de 200ms
         last_time = current_time;
@@ -61,7 +60,7 @@ void gpio_irq_handler(uint gpio, uint32_t events) {
         }
     }
 }
-//
+// Initialização das portas GPIO para botões e LEDs
 void init_gpio(void) {
     // Inicializa os botões
     gpio_init(BUTTON_PIN_A);
