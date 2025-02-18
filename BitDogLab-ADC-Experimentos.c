@@ -48,7 +48,12 @@ void gpio_irq_handler(uint gpio, uint32_t events) {
     if (current_time - last_time > 200000) { // Debounce de 200ms
         last_time = current_time;
 
-        if (gpio == BUTTON_PIN_B) {
+        if (gpio == JOYSTICK_PB) {
+            estado_led_verde = !estado_led_verde;
+            gpio_put(LED_PIN_G, estado_led_verde);
+            estado_borda = !estado_borda;
+        }
+        else if (gpio == BUTTON_PIN_B) {
             reset_usb_boot(0, 0);
         }
         else if (gpio == BUTTON_PIN_A) {
