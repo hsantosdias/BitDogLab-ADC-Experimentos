@@ -136,11 +136,31 @@ int main() {
     
     
     while (true) {
+        // Leitura dos valores do ADC para os eixos X e Y
         adc_select_input(0); // Seleciona o ADC para eixo X. O pino 26 como entrada analógica
         adc_value_x = adc_read();
         adc_select_input(1); // Seleciona o ADC para eixo Y. O pino 27 como entrada analógica
         adc_value_y = adc_read();
-      
+        
+    // Atualiza o brilho dos LEDs Vermelho e Azul com base nos valores do ADC para os eixos X e Y 
+        if (estado_pwm_leds) { // Se o controle PWM dos LEDs estiver ativado
+            pwm_set_gpio_level(LED_PIN_R, adc_value_x >> 4); // Atualiza o brilho do LED Vermelho
+            pwm_set_gpio_level(LED_PIN_B, adc_value_y >> 4); // Atualiza o brilho do LED Azul
+        }
+
+        // Atualiza a posição do quadrado no display com base nos valores do ADC para os eixos X e Y
+        quadrado_x = ((adc_value_x) * (WIDTH - 8)) / 4095;
+        quadrado_y = ((4095 - adc_value_y) * (HEIGHT - 8)) / 4095;
+
+        // Atualiza o display com o quadrado e a borda
+        ssd1306_fill(&ssd, false);
+        ssd1306_rect(&ssd, quadrado_y, quadrado_x, 8, 8, true, true);
+        // Atualiza a borda do display
+        if (estado_borda) {
+            ssd1306_rect(&ssd, 0, 0, WIDTH, HEIGHT, true, false);
+        }
+
+        ssd1306_send_data(&ssd); // Envia os dados para o display OLED SSD1306 128x64 I2C
         
         sleep_ms(100);
     }
