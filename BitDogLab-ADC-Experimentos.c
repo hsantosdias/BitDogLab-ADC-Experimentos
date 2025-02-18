@@ -1,20 +1,27 @@
 // Codigo construido com base no codigo original https://github.com/wiltonlacerda/EmbarcaTechU4C8/tree/main/ADC_DisplayEmC_Ex5
+// Hugo Santos Dias - 2025 - Tarefa 1 - conversor ADC e display OLED SSD1306 128x64 I2C
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "pico/stdlib.h"
-#include "hardware/adc.h"
-#include "hardware/i2c.h"
-#include "hardware/irq.h"
-#include "hardware/timer.h"
-#include "lib/ssd1306.h"
-#include "lib/font.h"
-#include "pico/bootrom.h"
+#include <stdio.h> //Bibliotec para printf e sprintf 
+#include <stdlib.h> //Biblioteca para funções de conversão de tipos de dados
+#include "pico/stdlib.h" //Biblioteca para funções de inicialização do Pico e funções de delay
 
+#include "hardware/adc.h" //Biblioteca para funções de inicialização do ADC e funções de leitura do ADC
+#include "hardware/i2c.h" //Biblioteca para funções de inicialização do I2C e funções de comunicação I2C uso do display OLED SSD1306 128x64 I2C
+#include "hardware/irq.h" //Biblioteca para funções de interrupção de hardware
+#include "hardware/pwm.h" //Biblioteca para funções de inicialização do PWM controle de brilho do LED RGB
+#include "hardware/timer.h" //Biblioteca para funções de inicialização do Timer e funções de interrupção de tempo
+#include "pico/bootrom.h" //Biblioteca para funções de inicialização do Pico e funções de delay para modo BOOTSEL Botão B
+//Bibliotecas especificas para o display OLED SSD1306 128x64 I2C e fontes
+#include "lib/ssd1306.h" //Biblioteca para funções de inicialização do display OLED SSD1306 128x64 I2C
+#include "lib/font.h" //Biblioteca para uso de fontes maiuscula/minuscula/numero no display OLED SSD1306 128x64 I2C
+
+// Definições para o display OLED SSD1306 128x64 I2C 
 #define I2C_PORT i2c1
 #define I2C_SDA 14
 #define I2C_SCL 15
 #define ENDERECO 0x3C
+
+// Definições para a leitura do joystick e botões - ADC
 #define JOYSTICK_X_PIN 26  // GPIO para eixo X
 #define JOYSTICK_Y_PIN 27  // GPIO para eixo Y
 #define JOYSTICK_PB 22 // GPIO para botão do Joystick
@@ -29,6 +36,10 @@
 // Variáveis globais
 static ssd1306_t ssd;  // Definição global do display OLED SSD1306 128x64 I2C
 static volatile bool estado_led_vermelho = false; // Estado do LED Vermelho (inicialmente desligado)
+static volatile bool estado_led_verde = false; // Estado do LED Verde
+static volatile bool estado_pwm_leds = true; // Estado do controle PWM dos LEDs
+static volatile bool estado_borda = false; // Estado da borda do display
+
 
 // Trecho para modo BOOTSEL com botão B e controle do LED Vermelho
 void gpio_irq_handler(uint gpio, uint32_t events) {

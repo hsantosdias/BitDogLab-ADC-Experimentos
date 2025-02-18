@@ -38,6 +38,7 @@
     "raspberry-pi-pico.ninjaPath": "${HOME}/.pico-sdk/ninja/v1.12.1/ninja",
     "files.associations": {
         "font.h": "c",
-        "bootrom.h": "c"
+        "bootrom.h": "c",
+        "ssd1306.h": "c"
     }
 }
