@@ -60,36 +60,29 @@ void gpio_irq_handler(uint gpio, uint32_t events) {
         }
     }
 }
+
 // Initialização das portas GPIO para botões e LEDs
 void init_gpio(void) {
-    // Inicializa os botões
-    gpio_init(BUTTON_PIN_A);
-    gpio_set_dir(BUTTON_PIN_A, GPIO_IN);
-    gpio_pull_up(BUTTON_PIN_A);
-    gpio_set_irq_enabled_with_callback(BUTTON_PIN_A, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
-
+    //Trata a interrupção dos botões B e A
+    // Botão B para modo BOOTSEL 
     gpio_init(BUTTON_PIN_B);
     gpio_set_dir(BUTTON_PIN_B, GPIO_IN);
     gpio_pull_up(BUTTON_PIN_B);
     gpio_set_irq_enabled_with_callback(BUTTON_PIN_B, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
 
-    gpio_init(JOYSTICK_PB);
-    gpio_set_dir(JOYSTICK_PB, GPIO_IN);
-    gpio_pull_up(JOYSTICK_PB);
-
+    // Botão A para controle do PWM dos LEDs
     gpio_init(BUTTON_PIN_A);
     gpio_set_dir(BUTTON_PIN_A, GPIO_IN);
     gpio_pull_up(BUTTON_PIN_A);
+    gpio_set_irq_enabled_with_callback(BUTTON_PIN_A, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
+    
+    // Trata a interrupção do botão do Joystick
+    gpio_init(JOYSTICK_PB);
+    gpio_set_dir(JOYSTICK_PB, GPIO_IN);
+    gpio_pull_up(JOYSTICK_PB);
+    gpio_set_irq_enabled_with_callback(JOYSTICK_PB, GPIO_IRQ_EDGE_FALL, true, &gpio_irq_handler);
 
-    // Inicializa os LEDs
-    gpio_init(LED_PIN_R);
-    gpio_set_dir(LED_PIN_R, GPIO_OUT);
-    gpio_put(LED_PIN_R, false);
-
-    gpio_init(LED_PIN_B);
-    gpio_set_dir(LED_PIN_B, GPIO_OUT);
-    gpio_put(LED_PIN_B, false);
-
+    // Inicializa o LED Verde digital
     gpio_init(LED_PIN_G);
     gpio_set_dir(LED_PIN_G, GPIO_OUT);
     gpio_put(LED_PIN_G, false);
