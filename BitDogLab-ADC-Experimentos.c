@@ -131,22 +131,16 @@ int main() {
     adc_gpio_init(JOYSTICK_Y_PIN);
     
     uint16_t adc_value_x, adc_value_y; // Variáveis para armazenar o valor do ADC
-    char str_x[5];  // Buffer para armazenar a string
-    char str_y[5];  // Buffer para armazenar a string  
+    int quadrado_x = WIDTH / 2 - 4;
+    int quadrado_y = HEIGHT / 2 - 4;
     
-    bool cor = true;
+    
     while (true) {
         adc_select_input(0); // Seleciona o ADC para eixo X. O pino 26 como entrada analógica
         adc_value_x = adc_read();
         adc_select_input(1); // Seleciona o ADC para eixo Y. O pino 27 como entrada analógica
         adc_value_y = adc_read();
-        
-        sprintf(str_x, "%d", adc_value_x);
-        sprintf(str_y, "%d", adc_value_y);
-        
-        ssd1306_fill(&ssd, !cor);
-        ssd1306_rect(&ssd, 3, 3, 122, 60, cor, !cor);
-        ssd1306_send_data(&ssd);
+      
         
         sleep_ms(100);
     }
