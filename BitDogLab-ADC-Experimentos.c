@@ -48,19 +48,19 @@ void gpio_irq_handler(uint gpio, uint32_t events) {
     if (current_time - last_time > 200000) { // Debounce de 200ms
         last_time = current_time;
 
-        if (gpio == JOYSTICK_PB) {
-            estado_led_verde = !estado_led_verde;
-            gpio_put(LED_PIN_G, estado_led_verde);
-            estado_borda = !estado_borda;
+        if (gpio == JOYSTICK_PB) { // Botão do Joystick para controle do LED Vermelho e Azul 
+            estado_led_verde = !estado_led_verde; // Inverte o estado do LED Verde
+            gpio_put(LED_PIN_G, estado_led_verde); // Atualiza o estado do LED Verde
+            estado_borda = !estado_borda; // Inverte o estado da borda do display OLED SSD1306 128x64 I2C
         }
-        else if (gpio == BUTTON_PIN_B) {
-            reset_usb_boot(0, 0);
+        else if (gpio == BUTTON_PIN_B) { // Botão B para modo BOOTSEL
+            reset_usb_boot(0, 0); // Reseta o Pico para o modo BOOTSEL
         }
-        else if (gpio == BUTTON_PIN_A) {
-            estado_pwm_leds = !estado_pwm_leds;
-            if (!estado_pwm_leds) {
-                pwm_set_gpio_level(LED_PIN_R, 0);
-                pwm_set_gpio_level(LED_PIN_B, 0);
+        else if (gpio == BUTTON_PIN_A) { // Botão A para controle do PWM dos LEDs
+            estado_pwm_leds = !estado_pwm_leds; // Inverte o estado do controle PWM dos LEDs 
+            if (!estado_pwm_leds) { // Se o controle PWM dos LEDs estiver desativado 
+                pwm_set_gpio_level(LED_PIN_R, 0); // Desliga o LED Vermelho
+                pwm_set_gpio_level(LED_PIN_B, 0); // Desliga o LED Azul
             }
         }
     }
@@ -123,14 +123,14 @@ void init_pwm(void) {
 }
 
 int main() {
-    init_gpio();
-    init_display();
-    adc_init();
+    init_gpio(); // Inicializa as portas GPIO para botões e LEDs
+    init_pwm(); // Inicializa o PWM para controle do LED RGB Vermelho e Azul
+    init_display(); // Inicializa o display OLED SSD1306 128x64 I2C
+    adc_init(); // Inicializa o ADC para leitura do Joystick
     adc_gpio_init(JOYSTICK_X_PIN);
     adc_gpio_init(JOYSTICK_Y_PIN);
     
-    uint16_t adc_value_x;
-    uint16_t adc_value_y;
+    uint16_t adc_value_x, adc_value_y; // Variáveis para armazenar o valor do ADC
     char str_x[5];  // Buffer para armazenar a string
     char str_y[5];  // Buffer para armazenar a string  
     
