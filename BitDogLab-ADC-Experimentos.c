@@ -90,6 +90,7 @@ void init_gpio(void) {
     gpio_put(LED_PIN_G, false);
 }
 
+//Função para inicialização do display OLED SSD1306 128x64 I2C
 void init_display(void) {
     // I2C Initialisation. Using it at 400Khz.
     i2c_init(I2C_PORT, 400 * 1000);
@@ -104,6 +105,18 @@ void init_display(void) {
   // Limpa o display. O display inicia com todos os pixels apagados.
     ssd1306_fill(&ssd, false);
     ssd1306_send_data(&ssd); // Envia os dados para o display
+}
+
+//Função para inicialização do pwm para controle do LED RGB vermleho e azul
+void init_pwm(void) {
+    gpio_set_function(LED_PIN_R, GPIO_FUNC_PWM);
+    gpio_set_function(LED_PIN_B, GPIO_FUNC_PWM);
+    uint slice_r = pwm_gpio_to_slice_num(LED_PIN_R);
+    uint slice_b = pwm_gpio_to_slice_num(LED_PIN_B);
+    pwm_set_wrap(slice_r, 4095);
+    pwm_set_wrap(slice_b, 4095);
+    pwm_set_enabled(slice_r, true);
+    pwm_set_enabled(slice_b, true);
 }
 
 int main() {
