@@ -43,19 +43,25 @@ static volatile bool estado_borda = false; // Estado da borda do display
 
 // Trecho para modo BOOTSEL com botão B e controle do LED Vermelho
 void gpio_irq_handler(uint gpio, uint32_t events) {
-   
-  
-  if (gpio == BUTTON_PIN_B) {
-    reset_usb_boot(0, 0);
-}
-  
-  if (gpio == BUTTON_PIN_A) {
-        estado_led_vermelho = !estado_led_vermelho; // Alterna o estado do LED Vermelho
-        gpio_put(LED_PIN_R, estado_led_vermelho); // Atualiza o LED
-        printf("Botão A pressionado: LED Vermelho %s\n", estado_led_vermelho ? "Ligado" : "Desligado");
+    static uint32_t last_time = 0;
+    uint32_t current_time = to_us_since_boot(get_absolute_time());
+
+    if (current_time - last_time > 200000) { // Debounce de 200ms
+        last_time = current_time;
+
+        if (gpio == BUTTON_PIN_B) {
+            reset_usb_boot(0, 0);
+        }
+        else if (gpio == BUTTON_PIN_A) {
+            estado_pwm_leds = !estado_pwm_leds;
+            if (!estado_pwm_leds) {
+                pwm_set_gpio_level(LED_PIN_R, 0);
+                pwm_set_gpio_level(LED_PIN_B, 0);
+            }
+        }
     }
 }
-
+//
 void init_gpio(void) {
     // Inicializa os botões
     gpio_init(BUTTON_PIN_A);
