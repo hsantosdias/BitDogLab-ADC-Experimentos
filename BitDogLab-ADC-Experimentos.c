@@ -102,8 +102,8 @@ void init_display(void) {
     gpio_pull_up(I2C_SDA); // Pull up the data line
     gpio_pull_up(I2C_SCL); // Pull up the clock line
 
-    ssd1306_init(&ssd, WIDTH, HEIGHT, false, ENDERECO, I2C_PORT); // Inicializa o display
-    ssd1306_config(&ssd); // Configura o display
+    ssd1306_init(&ssd, WIDTH, HEIGHT, false, ENDERECO, I2C_PORT); // Inicializa o display OLED SSD1306 128x64 I2C com endereço 0x3C
+    ssd1306_config(&ssd); // Configura o display OLED SSD1306 128x64 I2C
 
   // Limpa o display. O display inicia com todos os pixels apagados.
     ssd1306_fill(&ssd, false);
@@ -143,10 +143,13 @@ int main() {
         adc_value_y = adc_read();
         
     // Atualiza o brilho dos LEDs Vermelho e Azul com base nos valores do ADC para os eixos X e Y 
-        if (estado_pwm_leds) { // Se o controle PWM dos LEDs estiver ativado
-            pwm_set_gpio_level(LED_PIN_R, adc_value_x >> 4); // Atualiza o brilho do LED Vermelho
-            pwm_set_gpio_level(LED_PIN_B, adc_value_y >> 4); // Atualiza o brilho do LED Azul
-        }
+    if (adc_value_x >= 1940 && adc_value_x <= 2010 && adc_value_y >= 1950 && adc_value_y <= 2010) {
+        pwm_set_gpio_level(LED_PIN_R, 0);
+        pwm_set_gpio_level(LED_PIN_B, 0);
+    } else if (estado_pwm_leds) {
+        pwm_set_gpio_level(LED_PIN_R, abs(adc_value_x - 2048));
+        pwm_set_gpio_level(LED_PIN_B, abs(adc_value_y - 2048));
+    }
 
         // Atualiza a posição do quadrado no display com base nos valores do ADC para os eixos X e Y
         quadrado_x = ((adc_value_x) * (WIDTH - 8)) / 4095;
