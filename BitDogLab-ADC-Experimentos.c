@@ -143,7 +143,7 @@ int main() {
         adc_value_y = adc_read();
         
     // Atualiza o brilho dos LEDs Vermelho e Azul com base nos valores do ADC para os eixos X e Y 
-    if (adc_value_x >= 1940 && adc_value_x <= 2010 && adc_value_y >= 1950 && adc_value_y <= 2010) {
+    if (adc_value_x >= 1900 && adc_value_x <= 2050 && adc_value_y >= 1900 && adc_value_y <= 2050) {
         pwm_set_gpio_level(LED_PIN_R, 0);
         pwm_set_gpio_level(LED_PIN_B, 0);
     } else if (estado_pwm_leds) {
@@ -152,15 +152,23 @@ int main() {
     }
 
         // Atualiza a posição do quadrado no display com base nos valores do ADC para os eixos X e Y
-        quadrado_x = ((adc_value_x) * (WIDTH - 8)) / 4095;
-        quadrado_y = ((4095 - adc_value_y) * (HEIGHT - 8)) / 4095;
+        // codigo original removido pois estava invertendo os eixos X e Y do display
+        // quadrado_x = ((adc_value_x) * (WIDTH - 8)) / 4095;
+        // quadrado_y = ((4095 - adc_value_y) * (HEIGHT - 8)) / 4095;
+
+        // Atualiza a posição do quadrado no display com base nos valores do ADC para os eixos X e Y
+        // Comenta a linha acima e descomenta as linhas abaixo para inverter os eixos X e Y do display
+        quadrado_x = ((adc_value_y) * (WIDTH - 8)) / 4095;  // Usa adc_value_y para o eixo X    
+        quadrado_y = ((4095 - adc_value_x) * (HEIGHT - 8)) / 4095;  // Usa adc_value_x para o eixo Y
+
 
         // Atualiza o display com o quadrado e a borda
         ssd1306_fill(&ssd, false);
         ssd1306_rect(&ssd, quadrado_y, quadrado_x, 8, 8, true, true);
+        ssd1306_rect(&ssd, 0, 0, WIDTH, HEIGHT, true, false);
         // Atualiza a borda do display
         if (estado_borda) {
-            ssd1306_rect(&ssd, 0, 0, WIDTH, HEIGHT, true, false);
+            ssd1306_rect(&ssd, 2, 2, WIDTH, HEIGHT, true, false);
         }
 
         ssd1306_send_data(&ssd); // Envia os dados para o display OLED SSD1306 128x64 I2C
