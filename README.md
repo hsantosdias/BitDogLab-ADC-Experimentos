@@ -86,6 +86,8 @@ ninja
 
 ## Fluxograma do Projeto
 
+[![Fluxograma do projeto](imgs/fluxograma.png "Fluxograma do projeto")](https://github.com/hsantosdias/BitDogLab-ADC-Experimentos/blob/main/imgs/fluxograma.png?raw=true "Fluxograma do projeto")
+
 1. **Inicialização:** Configuração de **ADC, GPIOs, PWM e Display OLED**.
 2. **Leitura do Joystick:** Captura dos valores **X e Y** via **ADC**.
 3. **Controle dos LEDs:** Ajusta o brilho dos LEDs **Azul e Vermelho** conforme os valores do joystick.
