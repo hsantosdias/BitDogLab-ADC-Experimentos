@@ -4,7 +4,6 @@ Projeto para explorar a conversão **Analógico-Digital (ADC)** no RP2040 usando
 
 **Neste Link podemos ver o projeto em funcionamento**
 
-
 O projeto implementa:
 
 * Leitura de valores analógicos usando o **ADC** do RP2040 - BitDogLab.
@@ -30,21 +29,27 @@ O projeto implementa:
 ## Bibliotecas Utilizadas
 
 ### **1. Pico SDK**
+
 Fornece suporte para programação no RP2040, incluindo **GPIO, ADC, I2C e PWM**.
 
 ### **2. hardware/adc.h**
+
 Utilizada para captura de valores analógicos dos pinos do **RP2040**.
 
 ### **3. hardware/pwm.h**
+
 Permite o controle de **intensidade dos LEDs RGB** usando PWM.
 
 ### **4. hardware/i2c.h**
+
 Usada para comunicação com o **display SSD1306**.
 
 ### **5. hardware/irq.h**
+
 Gerencia **interrupções** para detecção de acionamentos de botões físicos.
 
 ### **6. inc/ssd1306.h**
+
 Biblioteca para manipulação gráfica do **display OLED SSD1306**.
 
 ## Estrutura do Projeto
