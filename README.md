@@ -15,12 +15,17 @@ O projeto implementa:
 
 ## Funcionalidades Implementadas
 
-* **Leitura de valores analógicos:** Captura valores dos eixos **X** e **Y** do joystick via **ADC**.
-* **Controle de LEDs RGB:** Varia a intensidade do LED **Azul** com base no eixo Y e do LED **Vermelho** com base no eixo X.
-* **Movimentação no display:** Exibe um quadrado de **8x8 pixels** no **SSD1306**, representando a posição do joystick.
-* **Botões físicos:**
-  * **Botão do joystick:** Alterna o estado do **LED Verde** e modifica a borda do display.
-  * **Botão A:** Liga/desliga os LEDs controlados por **PWM**.
+- **Leitura de ADC:** Captura valores dos eixos **X** e **Y** do joystick.
+- **Controle de LEDs RGB:**
+  - **LED Vermelho** varia conforme o eixo **X** do joystick.
+  - **LED Azul** varia conforme o eixo **Y** do joystick.
+- **Movimentação no display:**
+  - Exibe um quadrado **8x8 pixels** que representa a posição do joystick.
+  - A movimentação segue os eixos corretamente (para cima → quadrado sobe, etc.).
+- **Interação com Botões:**
+  - **Botão do joystick:** Alterna o estado do **LED Verde** e modifica a borda do display (borda grossa ao pressionar).
+  - **Botão A:** Liga/desliga os LEDs controlados por **PWM**.
+  - **Botão B:** Aciona o modo BOOTSEL para atualização do firmware.
 
 ## Bibliotecas Utilizadas
 
@@ -51,38 +56,41 @@ BitDogLab-ADC-Experimentos  # Nome do programa principal
 ├── BitDogLab_ADC_Experimentos.c  # Código-fonte principal
 ├── pico_sdk_import.cmake    # Configuração do SDK
 ├── CMakeLists.txt           # Configuração do projeto
-├── wokwi.toml               # Configuração para simulação no Wokwi
-├── diagram.json             # Conexões do projeto - WOKWI
 ├── README.md                # Documentação do projeto
 ```
 
 ## Configuração do Ambiente de Desenvolvimento
 
-O projeto utiliza o **Pico SDK**, **CMake**, **Ninja** e o compilador **arm-none-eabi-gcc**. O ambiente pode ser configurado conforme as instruções abaixo.
+O projeto utiliza:
 
-## Comandos para Clonar e Compilar o Projeto
+- **Pico SDK**
+- **CMake**
+- **Ninja**
+- **arm-none-eabi-gcc**
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/hsantosdias/BitDogLab-ADC-Experimentos.git
-   ```
-2. Compile e envie para o RP2040 utilizando o VS Code + Pico SDK.
+### Clonando e Compilando o Projeto
+
+```bash
+git clone https://github.com/hsantosdias/BitDogLab-ADC-Experimentos.git
+cd BitDogLab-ADC-Experimentos
+mkdir build
+cd build
+cmake ..
+ninja
+```
 
 ## Fluxograma do Projeto
 
-**Fluxograma Simplificado:**
-
-
-**Descrição:**
-1. **Inicialização do Sistema:** Configuração de **ADC, GPIOs, PWM e Display OLED**.
+1. **Inicialização:** Configuração de **ADC, GPIOs, PWM e Display OLED**.
 2. **Leitura do Joystick:** Captura dos valores **X e Y** via **ADC**.
 3. **Controle dos LEDs:** Ajusta o brilho dos LEDs **Azul e Vermelho** conforme os valores do joystick.
 4. **Atualização do Display:** Exibe um quadrado móvel representando a posição do joystick.
-5. **Interação com Botões:** O botão do joystick e o botão **A** alteram o estado dos LEDs e do display.
+5. **Interação com Botões:**
+   - Botão do joystick: Modifica o LED Verde e a borda do display (borda grossa quando pressionado).
+   - Botão A: Liga/desliga os LEDs controlados por PWM.
+   - Botão B: Entra no modo **BOOTSEL**.
 6. **Loop Contínuo:** Mantém a leitura e atualização do sistema em tempo real.
 
 ## Considerações Finais
 
-Este projeto demonstra a integração de **ADC, PWM e I2C** no RP2040 para leitura de sensores analógicos e controle de periféricos. Ele serve como uma base para aplicações mais avançadas em **sistemas embarcados** e **automação**.
-
-
+Este projeto demonstra a integração de **ADC, PWM e I2C** no RP2040, permitindo leitura de sensores analógicos e controle de periféricos. É uma base para aplicações avançadas em **sistemas embarcados** e **automação**.
