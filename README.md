@@ -1,5 +1,7 @@
 # BitDogLab-ADC-Experimentos
 
+[Link para o video de apresentação do projeto.](https://drive.google.com/file/d/1WBawv-KhjwhOnKyXO1IF0o0h2c22cvXm/view?usp=sharing "Link para o video de apresentação do projeto.")
+
 Projeto para explorar a conversão **Analógico-Digital (ADC)** no RP2040 usando a placa **BitDogLab**.
 
 **Neste Link podemos ver o projeto em funcionamento**
