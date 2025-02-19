@@ -147,8 +147,8 @@ int main() {
         pwm_set_gpio_level(LED_PIN_R, 0);
         pwm_set_gpio_level(LED_PIN_B, 0);
     } else if (estado_pwm_leds) {
-        pwm_set_gpio_level(LED_PIN_R, abs(adc_value_x - 2048));
-        pwm_set_gpio_level(LED_PIN_B, abs(adc_value_y - 2048));
+        pwm_set_gpio_level(LED_PIN_R, abs(adc_value_y - 2048));
+        pwm_set_gpio_level(LED_PIN_B, abs(adc_value_x - 2048));
     }
 
         // Atualiza a posição do quadrado no display com base nos valores do ADC para os eixos X e Y
