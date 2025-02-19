@@ -385,7 +385,7 @@
     [ "rgb26:B", "r3:1", "blue", [ "v0" ] ],
     [ "r3:2", "pico:GP12", "orange", [ "h67.2", "v-87.6" ] ],
     [
-      "pico:GP27",
+      "pico:GP26",
       "joystick1:VERT",
       "#8f4814",
       [
@@ -402,7 +402,7 @@
         "h-105.6"
       ]
     ],
-    [ "joystick1:HORZ", "pico:GP26", "green", [ "v19.2", "h105.6", "v86.4", "h364.8", "v-9.6" ] ],
+    [ "joystick1:HORZ", "pico:GP27", "green", [ "v19.2", "h105.6", "v86.4", "h364.8", "v-9.6" ] ],
     [
       "pico:GP22",
       "joystick1:SEL",
